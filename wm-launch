@@ -1,0 +1,48 @@
+#!/bin/sh
+
+set -eu
+
+usage() {
+    echo 'usage: wm-launch [-f FACTORY] WM_LAUNCH_ID COMMAND...' >&2
+    exit 2
+}
+
+while getopts ':f:' opt; do
+    case "$opt" in
+        f) factory="$OPTARG" ;;
+        *) usage
+    esac
+done
+
+shift $((OPTIND - 1))
+
+if [ -z "$DISPLAY" ]; then
+    echo 'DISPLAY not set' >&2
+    exit 1
+fi
+
+[ $# -lt 2 ] && usage
+
+launch_id="$1"
+shift
+
+if [ -n "${factory-}" ]; then
+    if [ -n "${XDG_RUNTIME_DIR:-}" ]; then
+        dir="$XDG_RUNTIME_DIR/wm-launch/$DISPLAY"
+    else
+        dir="/tmp/wm-launch/$(id -u)/$DISPLAY"
+    fi
+
+    mkdir -p "$dir"
+
+    # if file exists, wait till wm-launch-preload deletes it
+    while [ -e "$dir/$factory" ]; do
+        sleep 0.1
+    done
+
+    echo "$launch_id" > "$dir/$factory"
+else
+    preload='LD_PRELOAD=/usr/lib/wm-launch/wm-launch-preload.so'
+fi
+
+exec env "${preload-}" WM_LAUNCH_ID="$launch_id" "$@"
