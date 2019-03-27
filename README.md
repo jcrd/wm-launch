@@ -51,6 +51,10 @@ Then launch with `wm-launch -f emacs id2 emacsclient` which writes the ID to
 `emacs` in the runtime directory. The `LD_PRELOAD` for `emacsd` then reads and
 deletes this file when the new window is created.
 
+## Limitations
+* X11 clients launched from windows with `LD_PRELOAD` and `WM_LAUNCH_ID` in their
+  environment (such as a terminal) will inherit the `WM_LAUNCH_ID` value.
+
 ## License
 
 wm-launch is licensed under the GNU Lesser General Public License v2.1 or later
