@@ -25,7 +25,7 @@ LD_PRELOAD=/usr/lib/wm-launch/wm-launch-preload.so WM_LAUNCH_ID=id1 xterm
 ```
 The window created by `xterm` will have the property `WM_LAUNCH_ID`:
 ```
-$ xprop | grep WM_LAUNCH_ID
+$ xprop WM_LAUNCH_ID
 > WM_LAUNCH_ID(UTF8_STRING) = "id1"
 ```
 
