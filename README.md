@@ -55,6 +55,10 @@ deletes this file when the new window is created.
 * X11 clients launched from windows with `LD_PRELOAD` and `WM_LAUNCH_ID` in their
   environment (such as a terminal) will inherit the `WM_LAUNCH_ID` value.
 
+## Window manager integration
+* Integration with Awesome WM is provided by
+  [awesome-launch](https://github.com/jcrd/awesome-launch).
+
 ## License
 
 wm-launch is licensed under the GNU Lesser General Public License v2.1 or later
