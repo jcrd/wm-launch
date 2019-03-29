@@ -235,7 +235,7 @@ set_wm_launch_id(xcb_connection_t *conn, xcb_window_t win, xcb_window_t parent,
     if (!wm_launch_id)
         wm_launch_id = intern_atom(conn, "WM_LAUNCH_ID", 0);
 
-    LOG("window[%u] from %s", win, fname);
+    LOG("window[0x%X] from %s", win, fname);
 #ifndef DEBUG
     (void)fname;
 #endif
