@@ -8,6 +8,8 @@
 #include <xcb/xproto.h>
 #include <X11/Xlib-xcb.h>
 
+#include "common.h"
+
 #ifdef DEBUG
 #define LOG(fmt, ...) (printf(fmt, ##__VA_ARGS__))
 #else
@@ -81,24 +83,6 @@ get_func(const char *fname, int hid)
     return func;
 }
 
-static xcb_atom_t
-intern_atom(xcb_connection_t *conn, char *name, int only_if_exists)
-{
-    xcb_intern_atom_cookie_t c;
-    xcb_intern_atom_reply_t *r;
-    xcb_atom_t atom = 0;
-
-    c = xcb_intern_atom(conn, only_if_exists, strlen(name), name);
-    r = xcb_intern_atom_reply(conn, c, NULL);
-
-    if (r) {
-        atom = r->atom;
-        free(r);
-    }
-
-    return atom;
-}
-
 static int
 window_is_root(xcb_connection_t *conn, xcb_window_t win)
 {
@@ -167,7 +151,7 @@ get_launch_id(const char *factory_path)
 {
     static int get_id_env = 1;
     static const char *id_env = NULL;
-    static char id[256];
+    static char id[IDSIZE];
 
     FILE *fh = NULL;
 

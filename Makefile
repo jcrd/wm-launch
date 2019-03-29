@@ -32,5 +32,9 @@ uninstall:
 
 clean:
 	rm -f wm-launch-preload.so wm-launch-preload.o
+	$(MAKE) -C test clean
 
-.PHONY: all debug install uninstall clean
+test: all
+	$(MAKE) -C test run
+
+.PHONY: all debug install uninstall clean test

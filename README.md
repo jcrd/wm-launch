@@ -16,6 +16,14 @@ Build with `make`.
 
 Install with `make install`.
 
+### Testing
+
+Tests have additional dependencies:
+* xvfb
+* xterm
+
+Run tests with `make test`.
+
 ## Usage
 
 `LD_PRELOAD` can be specified along with `WM_LAUNCH_ID` in the
