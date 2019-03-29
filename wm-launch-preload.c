@@ -14,9 +14,6 @@
 #define LOG(fmt, ...)
 #endif
 
-#define XCB_SONAME "libxcb.so.1"
-#define X11_SONAME "libX11.so.6"
-
 #define INIT_FUNC(func, handle) \
     if (!func) func = get_func(__func__, handle)
 

@@ -3,7 +3,11 @@ BINPREFIX ?= $(PREFIX)/bin
 LIBPREFIX ?= $(PREFIX)/lib
 MANPREFIX ?= $(PREFIX)/share/man
 
-CPPFLAGS += -D_POSIX_C_SOURCE=200809L
+X11SONAME ?= libX11.so.6
+XCBSONAME ?= libxcb.so.1
+
+CPPFLAGS += -D_POSIX_C_SOURCE=200809L \
+			-DX11_SONAME=\"$(X11SONAME)\" -DXCB_SONAME=\"$(XCBSONAME)\"
 CFLAGS += -std=c99 -Wall -Wextra -fPIC
 LDFLAGS = -shared
 LDLIBS = $(shell pkgconf --libs x11-xcb)
