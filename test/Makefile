@@ -7,7 +7,7 @@ all: maprequestwait
 maprequestwait: maprequestwait.o
 
 run: all
-	xvfb-run -d ./test.sh
+	xvfb-run ./test.sh
 
 clean:
 	rm -f maprequestwait.o maprequestwait *.log
