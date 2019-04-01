@@ -4,26 +4,6 @@
 command-line tool to set IDs on newly created X11 windows. It is intended to be
 used by a window manager to uniquely identify clients it launches.
 
-## Building
-
-### Dependencies
-* libxcb
-* libx11
-
-Build with `make`.
-
-### Installing
-
-Install with `make install`.
-
-### Testing
-
-Tests have additional dependencies:
-* xvfb
-* xterm
-
-Run tests with `make test`.
-
 ## Usage
 
 `LD_PRELOAD` can be specified along with `WM_LAUNCH_ID` in the
@@ -66,6 +46,26 @@ deletes this file when the new window is created.
 ## Window manager integration
 * Integration with Awesome WM is provided by
   [awesome-launch](https://github.com/jcrd/awesome-launch).
+
+## Building
+
+### Dependencies
+* libxcb
+* libx11
+
+Build with `make`.
+
+### Installing
+
+Install with `make install`.
+
+### Testing
+
+Tests have additional dependencies:
+* xvfb
+* xterm
+
+Run tests with `make test`.
 
 ## License
 
