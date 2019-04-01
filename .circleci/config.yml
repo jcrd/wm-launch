@@ -1,0 +1,8 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: supplantr/wm-launch:1.0
+    steps:
+      - checkout
+      - run: make test

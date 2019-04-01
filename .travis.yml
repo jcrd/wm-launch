@@ -1,6 +1,0 @@
-language: c
-
-before_install:
-  - sudo apt-get install -y pkgconf libx11-xcb-dev
-
-script: make test

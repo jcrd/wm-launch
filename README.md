@@ -1,4 +1,4 @@
-# wm-launch [![Build Status](https://travis-ci.org/jcrd/wm-launch.svg?branch=master)](https://travis-ci.org/jcrd/wm-launch)
+# wm-launch
 
 **wm-launch** provides a shared library for use with `LD_PRELOAD` and a
 command-line tool to set IDs on newly created X11 windows. It is intended to be
