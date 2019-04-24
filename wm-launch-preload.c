@@ -11,11 +11,8 @@
 
 #include "common.h"
 
-#ifdef DEBUG
-#define LOG(fmt, ...) (printf(fmt, ##__VA_ARGS__))
-#else
-#define LOG(fmt, ...)
-#endif
+static int debug = 0;
+#define LOG(fmt, ...) if (debug) (printf(fmt, ##__VA_ARGS__))
 
 #define INIT_FUNC(func, handle) \
     if (!func) func = get_func(__func__, handle)
@@ -252,6 +249,7 @@ set_wm_launch_id(xcb_connection_t *conn, xcb_window_t win, xcb_window_t parent,
 {
     static xcb_atom_t wm_launch_id = 0;
     static xcb_atom_t utf8_string = 0;
+    static int get_debug = 1;
 
     if (!utf8_string)
         utf8_string = intern_atom(conn, "UTF8_STRING", 1);
@@ -259,10 +257,14 @@ set_wm_launch_id(xcb_connection_t *conn, xcb_window_t win, xcb_window_t parent,
     if (!wm_launch_id)
         wm_launch_id = intern_atom(conn, "WM_LAUNCH_ID", 0);
 
+    if (get_debug) {
+        const char *var = getenv("DEBUG");
+        if (var)
+            debug = 1;
+        get_debug = 0;
+    }
+
     LOG("window[0x%X] from %s", win, fname);
-#ifndef DEBUG
-    (void)fname;
-#endif
 
     if (!window_is_root(conn, parent)) {
         LOG("%s\n", ": not top level, skipping");
@@ -279,9 +281,8 @@ set_wm_launch_id(xcb_connection_t *conn, xcb_window_t win, xcb_window_t parent,
         atexit(cleanup_factory);
     }
 
-    if (file) {
+    if (file)
         LOG(": factory=%s", file);
-    }
 
     const char *id = get_launch_id(file);
 

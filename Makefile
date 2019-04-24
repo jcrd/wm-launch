@@ -14,9 +14,6 @@ LDLIBS = $(shell pkgconf --libs x11-xcb)
 
 all: wm-launch-preload.so
 
-debug: CFLAGS += -DDEBUG -O0 -g
-debug: wm-launch-preload.so
-
 wm-launch-preload.so: wm-launch-preload.o
 	$(LINK.c) $(LDLIBS) -o $@ $^
 
@@ -43,4 +40,4 @@ test-docker: clean
 	docker run --rm -v $(shell pwd):/root/wm-launch -w /root/wm-launch \
 		supplantr/wm-launch:1.0 make test
 
-.PHONY: all debug install uninstall test test-clean clean test-docker
+.PHONY: all install uninstall test test-clean clean test-docker
