@@ -6,7 +6,7 @@
 #include <time.h>
 #include <xcb/xcb.h>
 
-#include "../common.h"
+#include "../../common.h"
 
 #define TIMEOUT 10
 

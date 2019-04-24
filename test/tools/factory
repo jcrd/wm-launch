@@ -1,0 +1,27 @@
+#!/bin/sh
+
+readonly FIFO="/tmp/$1-factory.fifo"
+
+if [ -e "$FIFO" ]; then
+    echo 'new' > "$FIFO"
+    exit
+fi
+
+rmfifo() {
+    rm -f "$FIFO"
+}
+
+mkfifo "$FIFO"
+trap rmfifo EXIT INT TERM
+
+if [ "$1" = 'implicit' ]; then
+    createwindow &
+fi
+
+while read -r line; do
+    if [ "$line" = 'new' ]; then
+        createwindow &
+    else
+        break
+    fi
+done < "$FIFO"

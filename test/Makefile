@@ -2,14 +2,16 @@ CPPFLAGS += -D_POSIX_C_SOURCE=200809L
 CFLAGS += -std=c99 -Wall -Wextra
 LDLIBS = $(shell pkgconf --libs xcb)
 
-all: maprequestwait
+all: tools/createwindow tools/maprequestwait
 
-maprequestwait: maprequestwait.o
+tools/createwindow: tools/createwindow.o
+
+tools/maprequestwait: tools/maprequestwait.o
 
 run: all
-	xvfb-run ./test.sh
+	./run-tests.sh
 
 clean:
-	rm -f maprequestwait.o maprequestwait *.log
+	rm -f tools/createwindow tools/maprequestwait tools/*.o
 
 .PHONY: all run clean
