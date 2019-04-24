@@ -78,9 +78,10 @@ Install with `make install`.
 
 Tests have additional dependencies:
 * xvfb
-* xterm
 
-Run tests with `make test`.
+Run tests locally with `make test` or use `make test-docker` to run them in a
+[supplantr/wm-launch](https://hub.docker.com/r/supplantr/wm-launch) container
+which includes all dependencies.
 
 ## License
 
