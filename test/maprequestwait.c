@@ -50,7 +50,7 @@ main(int argc, char *argv[])
 
         while ((ev = xcb_poll_for_event(conn))) {
             if ((ev->response_type & ~0x80) != XCB_MAP_REQUEST)
-                continue;
+                goto next;
             const xcb_map_request_event_t *e = (xcb_map_request_event_t *)ev;
             xcb_get_property_cookie_t c = xcb_get_property(conn, 0, e->window,
                     prop, type, 0, IDSIZE);
@@ -59,9 +59,12 @@ main(int argc, char *argv[])
                 printf("%.*s\n", xcb_get_property_value_length(r),
                         (char *)xcb_get_property_value(r));
                 free(r);
+                free(ev);
                 xcb_disconnect(conn);
                 return EXIT_SUCCESS;
             }
+next:
+            free(ev);
         }
 
         struct timespec now;
