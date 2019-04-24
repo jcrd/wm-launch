@@ -1,2 +1,4 @@
 *.o
 *.so
+test/tools/createwindow
+test/tools/maprequestwait
