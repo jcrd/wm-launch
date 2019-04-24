@@ -38,6 +38,6 @@ clean: test-clean
 
 test-docker: clean
 	docker run --rm -v $(shell pwd):/root/wm-launch -w /root/wm-launch \
-		supplantr/wm-launch:1.0 make test
+		supplantr/wm-launch:1.1 make test
 
 .PHONY: all install uninstall test test-clean clean test-docker
