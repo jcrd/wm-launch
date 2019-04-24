@@ -2,6 +2,8 @@
 
 set -eu
 
+readonly PRELOAD="${WM_LAUNCH_PRELOAD:-/usr/lib/wm-launch/wm-launch-preload.so}"
+
 usage() {
     echo 'usage: wm-launch [-f FACTORY] WM_LAUNCH_ID COMMAND...' >&2
     exit 2
@@ -26,6 +28,8 @@ fi
 launch_id="$1"
 shift
 
+launch_env="WM_LAUNCH_ID=$launch_id"
+
 if [ -n "${factory-}" ]; then
     if [ -n "${XDG_RUNTIME_DIR:-}" ]; then
         dir="$XDG_RUNTIME_DIR/wm-launch/$DISPLAY"
@@ -35,14 +39,21 @@ if [ -n "${factory-}" ]; then
 
     mkdir -p "$dir"
 
-    # if file exists, wait till wm-launch-preload deletes it
-    while [ -e "$dir/$factory" ]; do
-        sleep 0.1
-    done
-
-    echo "$launch_id" > "$dir/$factory"
-else
-    preload='LD_PRELOAD=/usr/lib/wm-launch/wm-launch-preload.so'
+    if [ -e "$dir/$factory.lck" ]; then
+        # if file exists, wait till wm-launch-preload deletes it
+        while [ -e "$dir/$factory" ]; do
+            sleep 0.1
+        done
+        echo "$launch_id" > "$dir/$factory"
+        launch_env=""
+    else
+        echo "$launch_id" > "$dir/$factory"
+        launch_env="WM_LAUNCH_FACTORY=$factory"
+    fi
 fi
 
-exec env "${preload-}" WM_LAUNCH_ID="$launch_id" "$@"
+if [ -z "$launch_env" ]; then
+    exec "$@"
+else
+    exec env LD_PRELOAD="$PRELOAD" "$launch_env" "$@"
+fi

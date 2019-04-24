@@ -17,17 +17,32 @@ $ xprop WM_LAUNCH_ID
 > WM_LAUNCH_ID(UTF8_STRING) = "id1"
 ```
 
-A command-line tool is provided for convenience:
+A command-line tool is provided for convenience and for interacting with window
+factories:
 ```
 wm-launch [-f FACTORY] WM_LAUNCH_ID COMMAND...
 ```
 
 ### Window factories
+A window factory is an X11 client responsible for creating the windows of new
+clients. It can be either implicit or explicit, the key difference being that
+implicit factories create their own window.
 
-Window factories are daemons that create X11 windows based on a client's
+#### Implicit factory
+An implicit factory is an X11 client that reuses a single instance to create
+additional windows each time it's launched, e.g. `qutebrowser`, `kitty -1`.
+
+To correctly set the `WM_LAUNCH_ID` of an implicit factory, always run it via
+`wm-launch` with the same argument to the `-f` flag:
+```
+wm-launch -f qute id2 qutebrowser
+```
+
+#### Explicit factory
+An explicit window factory is a daemon that creates windows based on a client's
 request, e.g. `emacsd` and `emacsclient`, `urxvtd` and `urxvtc`.
 
-To correctly set the `WM_LAUNCH_ID` of these windows, first run the daemon with
+To correctly set the `WM_LAUNCH_ID` of an explicit factory, run the daemon with
 `LD_PRELOAD` and `WM_LAUNCH_FACTORY`:
 ```
 LD_PRELOAD=/usr/lib/wm-launch/wm-launch-preload.so WM_LAUNCH_FACTORY=emacs emacsd
@@ -35,7 +50,7 @@ LD_PRELOAD=/usr/lib/wm-launch/wm-launch-preload.so WM_LAUNCH_FACTORY=emacs emacs
 `WM_LAUNCH_FACTORY` specifies the filename in the runtime directory containing
 the next ID to use.
 
-Then launch with `wm-launch -f emacs id2 emacsclient` which writes the ID to
+Then launch with `wm-launch -f emacs id3 emacsclient` which writes the ID to
 `emacs` in the runtime directory. The `LD_PRELOAD` for `emacsd` then reads and
 deletes this file when the new window is created.
 

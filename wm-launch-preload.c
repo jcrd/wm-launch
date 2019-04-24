@@ -1,4 +1,5 @@
 #include <dlfcn.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -104,26 +105,14 @@ window_is_root(xcb_connection_t *conn, xcb_window_t win)
 }
 
 static char *
-get_factory_path(void)
+get_runtime_dir(void)
 {
-    static int get_factory = 1;
-    static const char *factory = NULL;
-    static char path[BUFSIZ];
-
-    char dir[BUFSIZ / 2];
+    static char dir[BUFSIZ / 2];
     const char *display = NULL;
     const char *rundir = NULL;
 
-    if (*path)
-        return path;
-
-    if (get_factory) {
-        factory = getenv("WM_LAUNCH_FACTORY");
-        get_factory = 0;
-    }
-
-    if (!factory)
-        return NULL;
+    if (*dir)
+        return dir;
 
     display = getenv("DISPLAY");
 
@@ -139,15 +128,59 @@ get_factory_path(void)
     else
         snprintf(dir, sizeof(dir), "/tmp/wm-launch/%d/%s", getuid(), display);
 
-    snprintf(path, sizeof(path), "%s/%s", dir, factory);
+    return dir;
+}
 
-    LOG("WM_LAUNCH_FACTORY=%s, file=%s\n", factory, path);
+static char *
+get_factory_name(void)
+{
+    static int get_name = 1;
+    static char *name = NULL;
+
+    if (get_name) {
+        name = getenv("WM_LAUNCH_FACTORY");
+        get_name = 0;
+    }
+
+    return name;
+}
+
+static char *
+get_factory_lock_path(void)
+{
+    static char path[BUFSIZ + 4];
+
+    if (*path)
+        return path;
+
+    const char *name = get_factory_name();
+    if (!name)
+        return NULL;
+    const char *dir = get_runtime_dir();
+    snprintf(path, sizeof(path), "%s/%s%s", dir, name, ".lck");
 
     return path;
 }
 
 static char *
-get_launch_id(const char *factory_path)
+get_factory_file_path(void)
+{
+    static char path[BUFSIZ];
+
+    if (*path)
+        return path;
+
+    const char *name = get_factory_name();
+    if (!name)
+        return NULL;
+    const char *dir = get_runtime_dir();
+    snprintf(path, sizeof(path), "%s/%s", dir, name);
+
+    return path;
+}
+
+static char *
+get_launch_id(const char *file)
 {
     static int get_id_env = 1;
     static const char *id_env = NULL;
@@ -161,49 +194,56 @@ get_launch_id(const char *factory_path)
         perror(NULL); \
     }
 
-    if (factory_path) {
-        if (access(factory_path, F_OK) != -1) {
-            fh = fopen(factory_path, "r");
+    if (file) {
+        if (access(file, F_OK) != -1) {
+            fh = fopen(file, "r");
 
             if (!fh) {
-                ERROR(factory_path);
+                ERROR(file);
                 return NULL;
             }
 
             if (!fgets(id, sizeof(id), fh)) {
                 fprintf(stderr, "ERROR: %s : failed to read factory file\n",
-                        factory_path);
+                        file);
                 fclose(fh);
                 return NULL;
             }
             fclose(fh);
 
-            if (unlink(factory_path) == -1)
-                ERROR(factory_path);
-
-            id[strcspn(id, "\n")] = 0;
+            if (unlink(file) == -1)
+                ERROR(file);
         } else {
             LOG("%s", ": factory file not accessible, using");
         }
     } else {
         if (get_id_env) {
             id_env = getenv("WM_LAUNCH_ID");
-            get_id_env = 0;
-        }
-        if (!*id) {
-            if (id_env) {
+            if (id_env)
                 snprintf(id, sizeof(id), "%s", id_env);
-            } else {
-                LOG("%s", "\n");
-                fprintf(stderr, "ERROR: WM_LAUNCH_ID not set\n");
-                return NULL;
-            }
+            get_id_env = 0;
         }
     }
 
 #undef ERROR
 
     return id;
+}
+
+static void
+cleanup_factory(void)
+{
+    const char *lock = get_factory_lock_path();
+    const char *file = get_factory_file_path();
+
+    if (access(lock, F_OK) != -1) {
+        remove(lock);
+        LOG("cleanup: removed %s\n", lock);
+    }
+    if (access(file, F_OK) != -1) {
+        remove(file);
+        LOG("cleanup: removed %s\n", file);
+    }
 }
 
 static void
@@ -229,11 +269,26 @@ set_wm_launch_id(xcb_connection_t *conn, xcb_window_t win, xcb_window_t parent,
         return;
     }
 
-    const char *factory_path = get_factory_path();
-    const char *id = get_launch_id(factory_path);
+    const char *lock = get_factory_lock_path();
+    const char *file = get_factory_file_path();
 
-    if (!id)
+    if (lock && access(lock, F_OK) == -1) {
+        int fd = open(lock, O_CREAT, 0);
+        close(fd);
+        LOG(" (lock=%s)", lock);
+        atexit(cleanup_factory);
+    }
+
+    if (file) {
+        LOG(": factory=%s", file);
+    }
+
+    const char *id = get_launch_id(file);
+
+    if (!*id) {
+        LOG(": WM_LAUNCH_ID not set\n");
         return;
+    }
 
     xcb_change_property(conn, XCB_PROP_MODE_REPLACE, win, wm_launch_id,
                         utf8_string ? utf8_string : XCB_ATOM_STRING, 8,
