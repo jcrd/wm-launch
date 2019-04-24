@@ -30,11 +30,13 @@ uninstall:
 	rm -f $(DESTDIR)$(BINPREFIX)/wm-launch
 	rm -rf $(DESTDIR)$(LIBPREFIX)/wm-launch
 
-clean:
-	rm -f wm-launch-preload.so wm-launch-preload.o
-	$(MAKE) -C test clean
-
 test: all
 	$(MAKE) -C test run
 
-.PHONY: all debug install uninstall clean test
+test-clean:
+	$(MAKE) -C test clean
+
+clean: test-clean
+	rm -f wm-launch-preload.so wm-launch-preload.o
+
+.PHONY: all debug install uninstall test test-clean clean
