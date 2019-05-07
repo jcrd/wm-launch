@@ -136,6 +136,8 @@ get_factory_name(void)
 
     if (get_name) {
         name = getenv("WM_LAUNCH_FACTORY");
+        if (name && strcmp(name, "") == 0)
+            name = NULL;
         get_name = 0;
     }
 
