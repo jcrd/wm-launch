@@ -5,12 +5,13 @@ set -eu
 readonly PRELOAD="${WM_LAUNCH_PRELOAD:-/usr/lib/wm-launch/wm-launch-preload.so}"
 
 usage() {
-    echo 'usage: wm-launch [-f FACTORY] WM_LAUNCH_ID COMMAND...' >&2
+    echo 'usage: wm-launch [-j] [-f FACTORY] WM_LAUNCH_ID COMMAND...' >&2
     exit 2
 }
 
-while getopts ':f:' opt; do
+while getopts ':jf:' opt; do
     case "$opt" in
+        j) firejail=true ;;
         f) factory="$OPTARG" ;;
         *) usage
     esac
@@ -52,8 +53,16 @@ if [ -n "${factory-}" ]; then
     fi
 fi
 
-if [ -z "$launch_env" ]; then
-    exec "$@"
+if [ -n "${firejail-}" ] && command -v firejail > /dev/null; then
+    if [ -z "$launch_env" ]; then
+        exec firejail "$@"
+    else
+        exec firejail --env=LD_PRELOAD="$PRELOAD" --env="$launch_env" "$@"
+    fi
 else
-    exec env LD_PRELOAD="$PRELOAD" "$launch_env" "$@"
+    if [ -z "$launch_env" ]; then
+        exec "$@"
+    else
+        exec env LD_PRELOAD="$PRELOAD" "$launch_env" "$@"
+    fi
 fi

@@ -20,7 +20,7 @@ $ xprop WM_LAUNCH_ID
 A command-line tool is provided for convenience and for interacting with window
 factories:
 ```
-wm-launch [-f FACTORY] WM_LAUNCH_ID COMMAND...
+wm-launch [-j] [-f FACTORY] WM_LAUNCH_ID COMMAND...
 ```
 
 ### Window factories
@@ -54,6 +54,11 @@ Then launch with `wm-launch -f emacs id3 emacsclient` which writes the ID to
 `emacs` in the runtime directory. The `LD_PRELOAD` for `emacsd` then reads and
 deletes this file when the new window is created.
 
+### Firejail
+A client can be launched with [firejail](https://github.com/netblue30/firejail)
+by running it via `wm-launch` using the `-j` flag. This sets the required
+environment variables in the sandbox created by firejail.
+
 ## Limitations
 * X11 clients launched from windows with `LD_PRELOAD` and `WM_LAUNCH_ID` in their
   environment (such as a terminal) will inherit the `WM_LAUNCH_ID` value.
@@ -82,6 +87,9 @@ Tests have additional dependencies:
 Run tests locally with `make test` or use `make test-docker` to run them in a
 [supplantr/wm-launch](https://hub.docker.com/r/supplantr/wm-launch) container
 which includes all dependencies.
+
+*Note:* firejail [cannot](https://github.com/netblue30/firejail/issues/2579)
+run in docker. It must be tested locally.
 
 ## License
 
