@@ -212,6 +212,9 @@ get_launch_id(const char *file)
 
             if (unlink(file) == -1)
                 ERROR(file);
+
+            /* Remove newline included by fgets. */
+            id[strcspn(id, "\n")] = 0;
         } else {
             LOG("%s", ": factory file not accessible, using");
         }
