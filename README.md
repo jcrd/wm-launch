@@ -60,8 +60,11 @@ by running it via `wm-launch` using the `-j` flag. This sets the required
 environment variables in the sandbox created by firejail.
 
 ## Limitations
-* X11 clients launched from windows with `LD_PRELOAD` and `WM_LAUNCH_ID` in their
-  environment (such as a terminal) will inherit the `WM_LAUNCH_ID` value.
+* Be aware of environment variable inheritance. This becomes a problem when
+  launching a client from a terminal created by a factory, i.e.
+  `WM_LAUNCH_FACTORY` is present in its environment. The new client will inherit
+  this variable and expect a factory file with its ID to exist. This scenario
+  can be avoided by launching the client with `wm-launch -f ""`.
 
 ## Window manager integration
 * Integration with Awesome WM is provided by
