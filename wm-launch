@@ -31,25 +31,29 @@ shift
 
 launch_env="WM_LAUNCH_ID=$launch_id"
 
-if [ -n "${factory-}" ]; then
-    if [ -n "${XDG_RUNTIME_DIR:-}" ]; then
-        dir="$XDG_RUNTIME_DIR/wm-launch/$DISPLAY"
-    else
-        dir="/tmp/wm-launch/$(id -u)/$DISPLAY"
-    fi
+if [ -n "${factory+x}" ]; then
+    if [ -n "$factory" ]; then
+        if [ -n "${XDG_RUNTIME_DIR:-}" ]; then
+            dir="$XDG_RUNTIME_DIR/wm-launch/$DISPLAY"
+        else
+            dir="/tmp/wm-launch/$(id -u)/$DISPLAY"
+        fi
 
-    mkdir -p "$dir"
+        mkdir -p "$dir"
 
-    if [ -e "$dir/$factory.lck" ]; then
-        # if file exists, wait till wm-launch-preload deletes it
-        while [ -e "$dir/$factory" ]; do
-            sleep 0.1
-        done
-        echo "$launch_id" > "$dir/$factory"
-        launch_env=""
+        if [ -e "$dir/$factory.lck" ]; then
+            # if file exists, wait till wm-launch-preload deletes it
+            while [ -e "$dir/$factory" ]; do
+                sleep 0.1
+            done
+            echo "$launch_id" > "$dir/$factory"
+            launch_env=""
+        else
+            echo "$launch_id" > "$dir/$factory"
+            launch_env="WM_LAUNCH_FACTORY=$factory"
+        fi
     else
-        echo "$launch_id" > "$dir/$factory"
-        launch_env="WM_LAUNCH_FACTORY=$factory"
+        launch_env="WM_LAUNCH_FACTORY= $launch_env"
     fi
 fi
 
@@ -63,6 +67,6 @@ else
     if [ -z "$launch_env" ]; then
         exec "$@"
     else
-        exec env LD_PRELOAD="$PRELOAD" "$launch_env" "$@"
+        exec env LD_PRELOAD="$PRELOAD" $launch_env "$@"
     fi
 fi
