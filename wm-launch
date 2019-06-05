@@ -22,15 +22,25 @@ set -eu
 readonly PRELOAD="${WM_LAUNCH_PRELOAD:-/usr/lib/wm-launch/wm-launch-preload.so}"
 
 usage() {
-    echo 'usage: wm-launch [-j] [-f FACTORY] WM_LAUNCH_ID COMMAND...' >&2
+    echo 'usage: wm-launch [options] WM_LAUNCH_ID COMMAND...
+
+options:
+  -h          Show help message
+  -j          Launch with firejail
+  -f FACTORY  Launch via a window factory'
+}
+
+usage_error() {
+    usage >&2
     exit 2
 }
 
-while getopts ':jf:' opt; do
+while getopts ':hjf:' opt; do
     case "$opt" in
+        h) usage; exit ;;
         j) firejail=true ;;
         f) factory="$OPTARG" ;;
-        *) usage
+        *) usage_error
     esac
 done
 
@@ -41,7 +51,7 @@ if [ -z "$DISPLAY" ]; then
     exit 1
 fi
 
-[ $# -lt 2 ] && usage
+[ $# -lt 2 ] && usage_error
 
 launch_id="$1"
 shift

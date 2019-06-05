@@ -20,7 +20,12 @@ $ xprop WM_LAUNCH_ID
 A command-line tool is provided for convenience and for interacting with window
 factories:
 ```
-wm-launch [-j] [-f FACTORY] WM_LAUNCH_ID COMMAND...
+usage: wm-launch [options] WM_LAUNCH_ID COMMAND...
+
+options:
+  -h          Show help message
+  -j          Launch with firejail
+  -f FACTORY  Launch via a window factory
 ```
 
 ### Window factories
