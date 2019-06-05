@@ -2,3 +2,4 @@
 *.so
 test/tools/createwindow
 test/tools/maprequestwait
+wm-launch

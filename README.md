@@ -26,6 +26,7 @@ options:
   -h          Show help message
   -j          Launch with firejail
   -f FACTORY  Launch via a window factory
+  -v          Show version
 ```
 
 ### Window factories

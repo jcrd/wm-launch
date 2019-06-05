@@ -1,3 +1,6 @@
+VERSIONCMD = git describe --dirty --tags --always 2> /dev/null
+VERSION := $(shell $(VERSIONCMD) || cat VERSION)
+
 PREFIX ?= /usr/local
 BINPREFIX ?= $(PREFIX)/bin
 LIBPREFIX ?= $(PREFIX)/lib
@@ -12,10 +15,14 @@ CFLAGS += -std=c99 -Wall -Wextra -fPIC
 LDFLAGS = -shared
 LDLIBS = $(shell pkgconf --libs x11-xcb)
 
-all: wm-launch-preload.so
+all: wm-launch-preload.so wm-launch
 
 wm-launch-preload.so: wm-launch-preload.o
 	$(LINK.c) $(LDLIBS) -o $@ $^
+
+wm-launch: wm-launch.in
+	sed -e "s/VERSION=/VERSION=$(VERSION)/" wm-launch.in > wm-launch
+	chmod +x wm-launch
 
 install:
 	mkdir -p $(DESTDIR)$(BINPREFIX)
@@ -34,7 +41,7 @@ test-clean:
 	$(MAKE) -C test clean
 
 clean: test-clean
-	rm -f wm-launch-preload.so wm-launch-preload.o
+	rm -f wm-launch-preload.so wm-launch-preload.o wm-launch
 
 test-docker: clean
 	docker run --rm -v $(shell pwd):/root/wm-launch -w /root/wm-launch \
