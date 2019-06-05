@@ -3,3 +3,4 @@
 test/tools/createwindow
 test/tools/maprequestwait
 wm-launch
+wm-launch.1

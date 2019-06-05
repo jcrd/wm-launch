@@ -1,0 +1,51 @@
+=head1 NAME
+
+wm-launch - launch X11 clients with unique IDs
+
+=head1 SYNOPSIS
+
+B<wm-launch> [options] WM_LAUNCH_ID COMMAND...
+
+=head1 DESCRIPTION
+
+wm-launch provides a shared library for use with I<LD_PRELOAD> and a
+command-line tool to set IDs on newly created X11 windows.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-h>
+
+Show help message.
+
+=item B<-j>
+
+Launch I<COMMAND> with firejail.
+
+=item B<-f> I<FACTORY>
+
+Launch via a window factory.
+A window factory is an X11 client responsible for creating the windows of new
+clients. It can be either implicit or explicit, the key difference being that
+implicit factories create their own window.
+
+=item B<-v>
+
+Show version.
+
+=back
+
+=head1 AUTHOR
+
+James Reed E<lt>jcrd@tuta.ioE<gt>
+
+=head1 REPORTING BUGS
+
+Bugs and issues can be reported here:
+L<https://github.com/jcrd/wm-launch/issues>
+
+=head1 COPYRIGHT
+
+Copyright 2019 James Reed. wm-launch is licensed under the
+GNU Lesser General Public License v2.1 or later.

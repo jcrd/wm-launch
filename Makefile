@@ -15,7 +15,9 @@ CFLAGS += -std=c99 -Wall -Wextra -fPIC
 LDFLAGS = -shared
 LDLIBS = $(shell pkgconf --libs x11-xcb)
 
-all: wm-launch-preload.so wm-launch
+MANPAGE = wm-launch.1
+
+all: wm-launch-preload.so wm-launch $(MANPAGE)
 
 wm-launch-preload.so: wm-launch-preload.o
 	$(LINK.c) $(LDLIBS) -o $@ $^
@@ -24,15 +26,21 @@ wm-launch: wm-launch.in
 	sed -e "s/VERSION=/VERSION=$(VERSION)/" wm-launch.in > wm-launch
 	chmod +x wm-launch
 
+$(MANPAGE): man/$(MANPAGE).pod
+	pod2man -n=wm-launch -c=wm-launch -r=$(VERSION) $< $(MANPAGE)
+
 install:
 	mkdir -p $(DESTDIR)$(BINPREFIX)
 	cp -p wm-launch $(DESTDIR)$(BINPREFIX)
 	mkdir -p $(DESTDIR)$(LIBPREFIX)/wm-launch
 	cp -p wm-launch-preload.so $(DESTDIR)$(LIBPREFIX)/wm-launch
+	mkdir -p $(DESTDIR)$(MANPREFIX)/man1
+	cp -p $(MANPAGE) $(DESTDIR)$(MANPREFIX)/man1
 
 uninstall:
 	rm -f $(DESTDIR)$(BINPREFIX)/wm-launch
 	rm -rf $(DESTDIR)$(LIBPREFIX)/wm-launch
+	rm -f $(DESTDIR)$(MANPREFIX)/man1/$(MANPAGE)
 
 test: all
 	$(MAKE) -C test run
@@ -41,7 +49,7 @@ test-clean:
 	$(MAKE) -C test clean
 
 clean: test-clean
-	rm -f wm-launch-preload.so wm-launch-preload.o wm-launch
+	rm -f wm-launch-preload.so wm-launch-preload.o wm-launch $(MANPAGE)
 
 test-docker: clean
 	docker run --rm -v $(shell pwd):/root/wm-launch -w /root/wm-launch \
