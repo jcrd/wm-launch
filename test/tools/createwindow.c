@@ -42,5 +42,7 @@ main(int argc, char *argv[])
 
     printf("0x%X\n", wid);
 
-    pause();
+    while (xcb_wait_for_event(conn));
+    xcb_destroy_window(conn, wid);
+    xcb_disconnect(conn);
 }
