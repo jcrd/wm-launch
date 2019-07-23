@@ -23,7 +23,9 @@ wm-launch-preload.so: wm-launch-preload.o
 	$(LINK.c) $(LDLIBS) -o $@ $^
 
 wm-launch: wm-launch.in
-	sed -e "s/VERSION=/VERSION=$(VERSION)/" wm-launch.in > wm-launch
+	sed -e "s|LIBPREFIX=|LIBPREFIX=$(LIBPREFIX)|" \
+		-e "s|VERSION=|VERSION=$(VERSION)|" \
+		wm-launch.in > wm-launch
 	chmod +x wm-launch
 
 $(MANPAGE): man/$(MANPAGE).pod

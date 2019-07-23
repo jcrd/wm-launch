@@ -19,9 +19,10 @@
 
 set -eu
 
+readonly LIBPREFIX=
 readonly VERSION=
 
-readonly PRELOAD="${WM_LAUNCH_PRELOAD:-/usr/lib/wm-launch/wm-launch-preload.so}"
+readonly PRELOAD="${WM_LAUNCH_PRELOAD:-$LIBPREFIX/wm-launch/wm-launch-preload.so}"
 
 usage() {
     echo 'usage: wm-launch [options] WM_LAUNCH_ID COMMAND...
