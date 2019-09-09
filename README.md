@@ -107,5 +107,5 @@ wm-launch is licensed under the GNU Lesser General Public License v2.1 or later
 
 ## Acknowledgements
 
-wm-launch is based on
+wm-launch-preload.c is based on
 [ld-preload-xcreatewindow-net-wm-pid](https://github.com/deepfire/ld-preload-xcreatewindow-net-wm-pid).
