@@ -1,6 +1,6 @@
 /*
 wm-launch - launch X11 clients with unique IDs
-Copyright (C) 2019 James Reed
+Copyright (C) 2019-2020 James Reed
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
