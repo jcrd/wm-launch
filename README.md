@@ -81,6 +81,7 @@ environment variables in the sandbox created by firejail.
 ### Dependencies
 * libxcb
 * libx11
+* perl
 
 Build with `make`.
 
