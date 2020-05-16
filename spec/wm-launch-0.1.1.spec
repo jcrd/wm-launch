@@ -7,6 +7,8 @@ License: LGPL
 URL: https://github.com/jcrd/wm-launch
 Source0: https://github.com/jcrd/wm-launch/archive/v0.1.1.tar.gz
 
+Requires: bash
+
 BuildRequires: gcc
 BuildRequires: libX11-devel
 BuildRequires: libxcb-devel
