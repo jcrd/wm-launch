@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: supplantr/wm-launch:1.1
+      - image: supplantr/wm-launch:latest
     steps:
       - checkout
       - run: make test
