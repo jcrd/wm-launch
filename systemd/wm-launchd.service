@@ -1,0 +1,11 @@
+[Unit]
+Description=wm-launch daemon
+Documentation=man:wm-launch(1)
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/wm-launchd
+Restart=always
+
+[Install]
+WantedBy=graphical-session.target

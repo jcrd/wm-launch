@@ -10,7 +10,7 @@ fi
 id="$(genid)"
 
 echo "[TEST] firejail: launching client in firejail"
-(sleep 1; ../wm-launch -j "$id" createwindow 2>&1) &
+(sleep 1; wm-launch -j "$id" createwindow 2>&1) &
 
 r="$(maprequestwait 2>&1)"
 echo "[TEST] firejail: map request received ($r)"

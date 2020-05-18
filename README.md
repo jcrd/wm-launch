@@ -53,12 +53,16 @@ To correctly set the `WM_LAUNCH_ID` of an explicit factory, run the daemon with
 ```
 LD_PRELOAD=/usr/lib/wm-launch/wm-launch-preload.so WM_LAUNCH_FACTORY=emacs emacsd
 ```
-`WM_LAUNCH_FACTORY` specifies the filename in the runtime directory containing
-the next ID to use.
 
-Then launch with `wm-launch -f emacs id3 emacsclient` which writes the ID to
-`emacs` in the runtime directory. The `LD_PRELOAD` for `emacsd` then reads and
-deletes this file when the new window is created.
+Then launch with `wm-launch -f emacs id3 emacsclient`.
+
+### wm-launchd
+
+wm-launchd must be running to handle window factories. Enable the systemd
+service to run when the `graphical-session.target` is reached:
+```
+systemctl --user enable wm-launchd
+```
 
 ### Firejail
 A client can be launched with [firejail](https://github.com/netblue30/firejail)
@@ -82,6 +86,7 @@ environment variables in the sandbox created by firejail.
 * libxcb
 * libx11
 * perl
+* go
 
 Build with `make`.
 

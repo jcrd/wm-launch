@@ -17,7 +17,7 @@ LDLIBS = $(shell pkgconf --libs x11-xcb)
 
 MANPAGE = wm-launch.1
 
-all: wm-launch-preload.so wm-launch $(MANPAGE)
+all: wm-launch-preload.so wm-launch wm-launchd $(MANPAGE)
 
 wm-launch-preload.so: wm-launch-preload.o
 	$(LINK.c) $(LDLIBS) -o $@ $^
@@ -28,20 +28,28 @@ wm-launch: wm-launch.in
 		wm-launch.in > wm-launch
 	chmod +x wm-launch
 
+wm-launchd: wm-launchd.go
+	go build $<
+
 $(MANPAGE): man/$(MANPAGE).pod
 	pod2man -n=wm-launch -c=wm-launch -r=$(VERSION) $< $(MANPAGE)
 
 install:
 	mkdir -p $(DESTDIR)$(BINPREFIX)
 	cp -p wm-launch $(DESTDIR)$(BINPREFIX)
+	cp -p wm-launchd $(DESTDIR)$(BINPREFIX)
 	mkdir -p $(DESTDIR)$(LIBPREFIX)/wm-launch
 	cp -p wm-launch-preload.so $(DESTDIR)$(LIBPREFIX)/wm-launch
+	mkdir -p $(DESTDIR)$(LIBPREFIX)/systemd/user
+	cp -p systemd/wm-launchd.service $(DESTDIR)$(LIBPREFIX)/systemd/user
 	mkdir -p $(DESTDIR)$(MANPREFIX)/man1
 	cp -p $(MANPAGE) $(DESTDIR)$(MANPREFIX)/man1
 
 uninstall:
 	rm -f $(DESTDIR)$(BINPREFIX)/wm-launch
+	rm -f $(DESTDIR)$(BINPREFIX)/wm-launchd
 	rm -rf $(DESTDIR)$(LIBPREFIX)/wm-launch
+	rm -f $(DESTDIR)$(LIBPREFIX)/systemd/user/wm-launchd.service
 	rm -f $(DESTDIR)$(MANPREFIX)/man1/$(MANPAGE)
 
 test: all
@@ -51,7 +59,7 @@ test-clean:
 	$(MAKE) -C test clean
 
 clean: test-clean
-	rm -f wm-launch-preload.so wm-launch-preload.o wm-launch $(MANPAGE)
+	rm -f wm-launch-preload.so wm-launch-preload.o wm-launch wm-launchd $(MANPAGE)
 
 test-podman: clean
 	podman run --rm -v $(shell pwd):/wm-launch:Z -w /wm-launch \

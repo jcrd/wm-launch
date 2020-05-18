@@ -19,10 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <dlfcn.h>
 #include <fcntl.h>
+#include <poll.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <time.h>
 #include <unistd.h>
 #include <xcb/xproto.h>
@@ -121,14 +124,14 @@ window_is_root(xcb_connection_t *conn, xcb_window_t win)
 }
 
 static char *
-get_runtime_dir(void)
+get_socket_path(void)
 {
-    static char dir[BUFSIZ / 2];
+    static char path[BUFSIZ / 2];
     const char *display = NULL;
     const char *rundir = NULL;
 
-    if (*dir)
-        return dir;
+    if (*path)
+        return path;
 
     display = getenv("DISPLAY");
 
@@ -139,12 +142,14 @@ get_runtime_dir(void)
 
     rundir = getenv("XDG_RUNTIME_DIR");
 
-    if (rundir)
-        snprintf(dir, sizeof(dir), "%s/wm-launch/%s", rundir, display);
-    else
-        snprintf(dir, sizeof(dir), "/tmp/wm-launch/%d/%s", getuid(), display);
+    if (!rundir) {
+        fprintf(stderr, "XDG_RUNTIME_DIR not set\n");
+        exit(EXIT_FAILURE);
+    }
 
-    return dir;
+    snprintf(path, sizeof(path), "%s/wm-launch/%s.sock", rundir, display);
+
+    return path;
 }
 
 static char *
@@ -163,108 +168,124 @@ get_factory_name(void)
     return name;
 }
 
-static char *
-get_factory_lock_path(void)
+static int
+send_msg(char *msg, size_t msg_len, char *rsp, size_t rsp_len)
 {
-    static char path[BUFSIZ + 4];
+    struct sockaddr_un addr;
+    int fd;
+    int ret = 0;
 
-    if (*path)
-        return path;
+    addr.sun_family = AF_UNIX;
 
-    const char *name = get_factory_name();
-    if (!name)
-        return NULL;
-    const char *dir = get_runtime_dir();
-    snprintf(path, sizeof(path), "%s/%s%s", dir, name, ".lck");
+    if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+        perror("Failed to create socket");
+        return 0;
+    }
 
-    return path;
+    snprintf(addr.sun_path, sizeof(addr.sun_path), "%s", get_socket_path());
+
+    if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
+        perror("Failed to connect to wm-launchd socket");
+        goto err;
+    }
+
+    LOG("wm-launch-preload: Sending message: %s", msg);
+    if (write(fd, msg, msg_len) == -1) {
+        perror("Failed to write to wm-launchd socket");
+        goto err;
+    }
+
+    if (!rsp) {
+        ret = 1;
+        goto err;
+    }
+
+    struct pollfd fds[] = {
+        {fd, POLLIN, 0},
+    };
+
+    while (poll(fds, 1, -1) > 0)
+        if (fds[0].revents & POLLIN) {
+            if (read(fd, rsp, rsp_len) == -1) {
+                perror("Failed to read from wm-launchd socket");
+            } else {
+                ret = 1;
+                LOG("wm-launch-preload: Response: %s", rsp);
+            }
+            break;
+        }
+
+err:
+    close(fd);
+    return ret;
 }
 
 static char *
-get_factory_file_path(void)
+get_env_id(void)
 {
-    static char path[BUFSIZ];
-
-    if (*path)
-        return path;
-
-    const char *name = get_factory_name();
-    if (!name)
-        return NULL;
-    const char *dir = get_runtime_dir();
-    snprintf(path, sizeof(path), "%s/%s", dir, name);
-
-    return path;
-}
-
-static char *
-get_launch_id(const char *file)
-{
-    static int get_id_env = 1;
-    static const char *id_env = NULL;
     static char id[IDSIZE];
+    static int get_env_id = 1;
+    const char *env_id = NULL;
 
-    FILE *fh = NULL;
-
-#define ERROR(path) { \
-        LOG("%s", "\n"); \
-        fprintf(stderr, "ERROR: %s :", path); \
-        perror(NULL); \
+    if (get_env_id) {
+        env_id = getenv("WM_LAUNCH_ID");
+        if (env_id)
+            snprintf(id, sizeof(id), "%s", env_id);
+        get_env_id = 0;
     }
-
-    if (file) {
-        if (access(file, F_OK) != -1) {
-            fh = fopen(file, "r");
-
-            if (!fh) {
-                ERROR(file);
-                return NULL;
-            }
-
-            if (!fgets(id, sizeof(id), fh)) {
-                fprintf(stderr, "ERROR: %s : failed to read factory file\n",
-                        file);
-                fclose(fh);
-                return NULL;
-            }
-            fclose(fh);
-
-            if (unlink(file) == -1)
-                ERROR(file);
-
-            /* Remove newline included by fgets. */
-            id[strcspn(id, "\n")] = 0;
-        } else {
-            LOG("%s", ": factory file not accessible, using");
-        }
-    } else {
-        if (get_id_env) {
-            id_env = getenv("WM_LAUNCH_ID");
-            if (id_env)
-                snprintf(id, sizeof(id), "%s", id_env);
-            get_id_env = 0;
-        }
-    }
-
-#undef ERROR
 
     return id;
 }
 
-static void
-cleanup_factory(void)
+static int
+register_factory(void)
 {
-    const char *lock = get_factory_lock_path();
-    const char *file = get_factory_file_path();
+    static int pid = -1;
+    char msg[BUFSIZ];
+    char rsp[BUFSIZ];
 
-    if (access(lock, F_OK) != -1) {
-        remove(lock);
-        LOG("cleanup: removed %s\n", lock);
-    }
-    if (access(file, F_OK) != -1) {
-        remove(file);
-        LOG("cleanup: removed %s\n", file);
-    }
+    if (pid == -1)
+        pid = getpid();
+
+    snprintf(msg, sizeof(msg), "REGISTER_FACTORY %s %d\n",
+            get_factory_name(), pid);
+    send_msg(msg, sizeof(msg), rsp, sizeof(rsp));
+
+    if (strcmp(rsp, "OK\n") == 0)
+        return 1;
+
+    return 0;
+}
+
+static void
+remove_factory(void)
+{
+    char msg[BUFSIZ];
+    char rsp[BUFSIZ];
+
+    snprintf(msg, sizeof(msg), "REMOVE_FACTORY %s\n", get_factory_name());
+    send_msg(msg, sizeof(msg), rsp, sizeof(rsp));
+}
+
+static char *
+get_factory_id(void)
+{
+    static char id[IDSIZE];
+    char fmt[16];
+    char msg[BUFSIZ];
+    char rsp[BUFSIZ];
+    const char *factory = get_factory_name();
+
+    snprintf(fmt, sizeof(fmt), "ID %%%lus", sizeof(id));
+    snprintf(msg, sizeof(msg), "GET_ID %s\n", factory);
+
+    if (!send_msg(msg, sizeof(msg), rsp, sizeof(rsp)))
+        return NULL;
+
+    if (sscanf(rsp, fmt, &id) == 0)
+        LOG("wm-launch-preload: Factory %s has no IDs\n", factory);
+
+    return id;
 }
 
 static void
@@ -274,6 +295,9 @@ set_wm_launch_id(xcb_connection_t *conn, xcb_window_t win, xcb_window_t parent,
     static xcb_atom_t wm_launch_id = 0;
     static xcb_atom_t utf8_string = 0;
     static int get_debug = 1;
+    const char *env_debug = NULL;
+    const char *factory = get_factory_name();
+    const char *id = get_env_id();
 
     if (!utf8_string)
         utf8_string = intern_atom(conn, "UTF8_STRING", 1);
@@ -282,36 +306,28 @@ set_wm_launch_id(xcb_connection_t *conn, xcb_window_t win, xcb_window_t parent,
         wm_launch_id = intern_atom(conn, "WM_LAUNCH_ID", 0);
 
     if (get_debug) {
-        const char *var = getenv("DEBUG");
-        if (var)
+        env_debug = getenv("DEBUG");
+        if (env_debug)
             debug = 1;
         get_debug = 0;
     }
 
-    LOG("window[0x%X] from %s", win, fname);
+    LOG("wm-launch-preload: window[0x%X] from %s", win, fname);
 
     if (!window_is_root(conn, parent)) {
-        LOG("%s\n", ": not top level, skipping");
+        LOG(": %s\n", "not top level, skipping");
         return;
     }
 
-    const char *lock = get_factory_lock_path();
-    const char *file = get_factory_file_path();
-
-    if (lock && access(lock, F_OK) == -1) {
-        int fd = open(lock, O_CREAT, 0);
-        close(fd);
-        LOG(" (lock=%s)", lock);
-        atexit(cleanup_factory);
+    if (factory) {
+        LOG("\n");
+        if (register_factory())
+            atexit(remove_factory);
+        id = get_factory_id();
     }
 
-    if (file)
-        LOG(": factory=%s", file);
-
-    const char *id = get_launch_id(file);
-
     if (!*id) {
-        LOG(": WM_LAUNCH_ID not set\n");
+        LOG(": %s\n", "no ID specified");
         return;
     }
 

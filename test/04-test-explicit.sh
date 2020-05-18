@@ -9,7 +9,7 @@ echo "[TEST] explicit: starting factory"
 LD_PRELOAD="$WM_LAUNCH_PRELOAD" WM_LAUNCH_FACTORY=explicit factory explicit 2>&1) &
 
 echo "[TEST] explicit: creating window ($id)"
-(sleep 1; ../wm-launch -f explicit "$id" factory explicit 2>&1) &
+(sleep 1; wm-launch -f explicit "$id" factory explicit 2>&1) &
 
 r="$(maprequestwait 2>&1)"
 echo "[TEST] explicit: map request received ($r)"
