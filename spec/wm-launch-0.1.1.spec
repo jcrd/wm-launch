@@ -1,6 +1,6 @@
 Name: wm-launch
 Version: 0.1.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Tool to launch X11 clients with unique IDs
 
 License: LGPL
@@ -10,9 +10,9 @@ Source0: https://github.com/jcrd/wm-launch/archive/v0.1.1.tar.gz
 Requires: bash
 
 BuildRequires: gcc
-BuildRequires: libX11-devel
-BuildRequires: libxcb-devel
 BuildRequires: perl
+BuildRequires: pkgconfig(x11)
+BuildRequires: pkgconfig(xcb)
 
 %global debug_package %{nil}
 
@@ -36,5 +36,8 @@ wm-launch provides a shared library for use with LD_PRELOAD and a command-line t
 /usr/share/man/man1/%{name}.1.gz
 
 %changelog
+* Sun May 24 2020 James Reed <jcrd@tuta.io> - 0.1.1-2
+- Use pkgconfig in build requires
+
 * Mon May 11 2020 James Reed <jcrd@tuta.io> - 0.1.1
 - Initial package
