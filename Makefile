@@ -65,4 +65,4 @@ test-podman: clean
 	podman run --rm -v $(shell pwd):/wm-launch:Z -w /wm-launch \
 		supplantr/wm-launch make test
 
-.PHONY: all install uninstall test test-clean clean test-docker
+.PHONY: all install uninstall test test-clean clean test-podman
