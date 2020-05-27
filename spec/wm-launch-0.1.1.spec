@@ -1,6 +1,6 @@
 Name: wm-launch
 Version: 0.1.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: Tool to launch X11 clients with unique IDs
 
 License: LGPL
@@ -31,11 +31,14 @@ wm-launch provides a shared library for use with LD_PRELOAD and a command-line t
 %files
 %license LICENSE
 %doc README.md
-/usr/bin/%{name}
+%{_bindir}/%{name}
 /usr/lib/wm-launch/%{name}-preload.so
-/usr/share/man/man1/%{name}.1.gz
+%{_mandir}/man1/%{name}.1.gz
 
 %changelog
+* Wed May 27 2020 James Reed <jcrd@tuta.io> - 0.1.1-3
+- Use rpm macros in files section
+
 * Sun May 24 2020 James Reed <jcrd@tuta.io> - 0.1.1-2
 - Use pkgconfig in build requires
 
