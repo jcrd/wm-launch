@@ -1,4 +1,4 @@
-# wm-launch [![CircleCI](https://circleci.com/gh/jcrd/wm-launch.svg?style=svg)](https://circleci.com/gh/jcrd/wm-launch)
+# wm-launch [![CircleCI](https://circleci.com/gh/jcrd/wm-launch.svg?style=svg)](https://circleci.com/gh/jcrd/wm-launch) [![Copr build status](https://copr.fedorainfracloud.org/coprs/jcrd/wm-launch/package/wm-launch/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/jcrd/wm-launch/package/wm-launch/)
 
 **wm-launch** provides a shared library for use with `LD_PRELOAD` and a
 command-line tool to set IDs on newly created X11 windows. It is intended to be
