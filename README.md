@@ -99,12 +99,12 @@ Install with `make install`.
 Tests have additional dependencies:
 * xvfb
 
-Run tests locally with `make test` or use `make test-docker` to run them in a
+Run tests locally with `make test` or use `make test-podman` to run them in a
 [supplantr/wm-launch](https://hub.docker.com/r/supplantr/wm-launch) container
 which includes all dependencies.
 
 *Note:* firejail [cannot](https://github.com/netblue30/firejail/issues/2579)
-run in docker. It must be tested locally.
+run in containers. It must be tested locally.
 
 ## License
 
