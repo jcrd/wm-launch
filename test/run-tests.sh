@@ -4,6 +4,7 @@ n=0
 s=0
 f=0
 
+export DISPLAY=:99
 export PATH="$PWD/..:$PWD/tools:$PATH"
 export XDG_RUNTIME_DIR="$PWD/run"
 export WM_LAUNCH_PRELOAD=../wm-launch-preload.so
@@ -23,7 +24,7 @@ run_test() {
     fi
 }
 
-DISPLAY=:99 wm-launchd &
+wm-launchd &
 
 if [ $# -eq 0 ]; then
     for t in *-test-*.sh; do
