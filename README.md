@@ -1,8 +1,18 @@
-# wm-launch [![CircleCI](https://circleci.com/gh/jcrd/wm-launch.svg?style=svg)](https://circleci.com/gh/jcrd/wm-launch) [![Copr build status](https://copr.fedorainfracloud.org/coprs/jcrd/wm-launch/package/wm-launch/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/jcrd/wm-launch/package/wm-launch/)
+# wm-launch [![CircleCI](https://circleci.com/gh/jcrd/wm-launch.svg?style=svg)](https://circleci.com/gh/jcrd/wm-launch)
 
 **wm-launch** provides a shared library for use with `LD_PRELOAD` and a
 command-line tool to set IDs on newly created X11 windows. It is intended to be
 used by a window manager to uniquely identify clients it launches.
+
+## Packages
+
+* **RPM** package available from [copr][1]. [![Copr build status](https://copr.fedorainfracloud.org/coprs/jcrd/wm-launch/package/wm-launch/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/jcrd/wm-launch/package/wm-launch/)
+
+  Install with:
+  ```
+  dnf copr enable jcrd/wm-launch
+  dnf install wm-launch
+  ```
 
 ## Usage
 
@@ -115,3 +125,5 @@ wm-launch is licensed under the GNU Lesser General Public License v2.1 or later
 
 wm-launch-preload.c is based on
 [ld-preload-xcreatewindow-net-wm-pid](https://github.com/deepfire/ld-preload-xcreatewindow-net-wm-pid).
+
+[1]: https://copr.fedorainfracloud.org/coprs/jcrd/wm-launch/
