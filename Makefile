@@ -19,6 +19,9 @@ MANPAGE = wm-launch.1
 
 all: wm-launch-preload.so wm-launch wm-launchd $(MANPAGE)
 
+compile_commands.json: clean
+	bear make
+
 wm-launch-preload.so: wm-launch-preload.o
 	$(LINK.c) $(LDLIBS) -o $@ $^
 
