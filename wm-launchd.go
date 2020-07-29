@@ -122,6 +122,16 @@ func (fm *FactMap) check(name string) bool {
     return false
 }
 
+func (fm *FactMap) checkAll() {
+    fm.mutex.Lock()
+    for name, f := range fm.facts {
+        if !f.exists() {
+            delete(fm.facts, name)
+        }
+    }
+    fm.mutex.Unlock()
+}
+
 func (fm *FactMap) getFactNames() []string {
     names := make([]string, 0, len(fm.facts))
     fm.mutex.Lock()
@@ -340,6 +350,12 @@ func main() {
         log.Fatal(err)
     }
     defer s.Close()
+
+    go func () {
+        for range time.Tick(time.Second * 10) {
+            factMap.checkAll()
+        }
+    }()
 
     for {
         c, err := s.Accept()
