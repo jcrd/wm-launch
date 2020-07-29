@@ -223,7 +223,7 @@ func handleConn(c net.Conn) {
             reply("ERROR NO_FACTORY")
             break
         }
-        reply(strings.Join(factMap.getFactNames()[:], " "))
+        reply(strings.Join(names[:], " "))
     case "CHECK_FACTORY":
         if factMap.check(fields[1]) {
             reply("TRUE")
