@@ -302,6 +302,7 @@ func main() {
     var factory string
     var id string
     var list bool
+    var check time.Duration
 
     printList := func(cmd ...interface{}) {
         if list {
@@ -317,6 +318,8 @@ func main() {
     flag.StringVar(&factory, "factory", "", "name of window factory")
     flag.StringVar(&id, "id", "", "ID to add to factory")
     flag.BoolVar(&list, "list", false, "list factory names or IDs")
+    d, _ := time.ParseDuration("10s")
+    flag.DurationVar(&check, "check", d, "factory check frequency in seconds")
 
     flag.Parse()
 
@@ -352,7 +355,7 @@ func main() {
     defer s.Close()
 
     go func () {
-        for range time.Tick(time.Second * 10) {
+        for range time.Tick(check) {
             factMap.checkAll()
         }
     }()
