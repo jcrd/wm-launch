@@ -291,6 +291,7 @@ func send(s ...interface{}) string {
 func main() {
     var factory string
     var id string
+    var check string
     var list bool
 
     printList := func(cmd ...interface{}) {
@@ -304,11 +305,24 @@ func main() {
         }
     }
 
+    checkFact := func(name string) {
+        if send("CHECK_FACTORY", name) == "TRUE" {
+            os.Exit(0)
+        } else {
+            os.Exit(1)
+        }
+    }
+
     flag.StringVar(&factory, "factory", "", "name of window factory")
     flag.StringVar(&id, "id", "", "ID to add to factory")
+    flag.StringVar(&check, "check", "", "name of factory to check")
     flag.BoolVar(&list, "list", false, "list factory names or IDs")
 
     flag.Parse()
+
+    if check != "" {
+        checkFact(check)
+    }
 
     if factory != "" {
         printList("LIST_IDS", factory)
@@ -317,11 +331,7 @@ func main() {
             os.Exit(0)
         }
 
-        if send("CHECK_FACTORY", factory) == "TRUE" {
-            os.Exit(0)
-        } else {
-            os.Exit(1)
-        }
+        checkFact(factory)
     }
 
     printList("LIST_FACTORIES")
