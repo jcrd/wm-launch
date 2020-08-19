@@ -76,7 +76,7 @@ if [ -n "${factory+x}" ]; then
     fi
 fi
 
-if [ -n "${firejail-}" ] && command -v firejail > /dev/null; then
+if [ -n "${firejail-}" ]; then
     if [ -z "$launch_env" ]; then
         exec firejail "$@"
     else
