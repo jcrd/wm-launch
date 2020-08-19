@@ -19,6 +19,10 @@ command-line tool to set IDs on newly created X11 windows.
 
 Show help message.
 
+=item B<-s>
+
+Launch I<COMMAND> with B<systemd-run --user --scope>.
+
 =item B<-j>
 
 Launch I<COMMAND> with firejail.

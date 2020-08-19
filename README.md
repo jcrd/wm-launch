@@ -34,6 +34,7 @@ usage: wm-launch [options] WM_LAUNCH_ID COMMAND...
 
 options:
   -h          Show help message
+  -s          Launch with systemd-run
   -j          Launch with firejail
   -f FACTORY  Launch via a window factory
   -v          Show version
@@ -73,6 +74,11 @@ service to run when the `graphical-session.target` is reached:
 ```
 systemctl --user enable wm-launchd
 ```
+
+### systemd-run
+A client can be launched with `systemd-run` by running it via `wm-launch` using
+the `-s` flag. This will run the command in a user scope with
+`systemd-run --user --scope`.
 
 ### Firejail
 A client can be launched with [firejail](https://github.com/netblue30/firejail)
