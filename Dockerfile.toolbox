@@ -1,8 +1,7 @@
-FROM supplantr/toolbox
+FROM supplantr/golang-toolbox
 
 RUN dnf install -y gcc
 RUN dnf install -y perl
-RUN dnf install -y go
 RUN dnf install -y libxcb-devel
 RUN dnf install -y libX11-devel
 
@@ -12,5 +11,3 @@ RUN dnf install -y firejail
 # clangd
 RUN dnf install -y clang-tools-extra
 RUN dnf install -y bear
-
-RUN GO111MODULE=on go get golang.org/x/tools/gopls@latest
