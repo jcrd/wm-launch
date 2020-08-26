@@ -8,7 +8,7 @@ export DISPLAY=:99
 export PATH="$PWD/..:$PWD/tools:$PATH"
 export XDG_RUNTIME_DIR="$PWD/run"
 export WM_LAUNCH_PRELOAD=../wm-launch-preload.so
-export DEBUG=true
+export WM_LAUNCHD_DEBUG=true
 
 run_test() {
     n=$((n+1))

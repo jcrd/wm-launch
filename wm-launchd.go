@@ -137,7 +137,7 @@ var factMap = FactMap{
     facts: make(map[string]*Factory),
 }
 var socketPath = getSocketPath()
-var _, logDebug = os.LookupEnv("DEBUG")
+var _, logDebug = os.LookupEnv("WM_LAUNCHD_DEBUG")
 
 func debug(fmt string, s ...interface{}) {
     if logDebug {
