@@ -17,7 +17,7 @@ LDLIBS = $(shell pkgconf --libs x11-xcb)
 
 MANPAGE = wm-launch.1
 
-all: wm-launch-preload.so wm-launch wm-launchd $(MANPAGE)
+all: wm-launch-preload.so wm-launch wm-launchd wm-launch-workspace $(MANPAGE)
 
 compile_commands.json: clean
 	bear make
@@ -34,6 +34,9 @@ wm-launch: wm-launch.in
 wm-launchd: wm-launchd.go
 	go build $<
 
+wm-launch-workspace: wm-launch-workspace.go
+	go build -mod vendor $<
+
 $(MANPAGE): man/$(MANPAGE).pod
 	pod2man -n=wm-launch -c=wm-launch -r=$(VERSION) $< $(MANPAGE)
 
@@ -43,6 +46,7 @@ install:
 	cp -p wm-launchd $(DESTDIR)$(BINPREFIX)
 	mkdir -p $(DESTDIR)$(LIBPREFIX)/wm-launch
 	cp -p wm-launch-preload.so $(DESTDIR)$(LIBPREFIX)/wm-launch
+	cp -p wm-launch-workspace $(DESTDIR)$(LIBPREFIX)/wm-launch
 	mkdir -p $(DESTDIR)$(LIBPREFIX)/systemd/user
 	cp -p systemd/wm-launchd.service $(DESTDIR)$(LIBPREFIX)/systemd/user
 	mkdir -p $(DESTDIR)$(MANPREFIX)/man1
@@ -62,7 +66,7 @@ test-clean:
 	$(MAKE) -C test clean
 
 clean: test-clean
-	rm -f wm-launch-preload.so wm-launch-preload.o wm-launch wm-launchd $(MANPAGE)
+	rm -f wm-launch-preload.so wm-launch-preload.o wm-launch wm-launchd wm-launch-workspace $(MANPAGE)
 
 test-podman: clean
 	podman run --rm -v $(shell pwd):/wm-launch:Z -w /wm-launch \

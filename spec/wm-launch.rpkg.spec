@@ -35,7 +35,7 @@ wm-launch provides a shared library for use with LD_PRELOAD and a command-line t
 %doc README.md
 %{_bindir}/%{name}
 %{_bindir}/%{name}d
-/usr/lib/wm-launch/%{name}-preload.so
+/usr/lib/wm-launch
 /usr/lib/systemd/user/%{name}d.service
 %{_mandir}/man1/%{name}.1.gz
 
