@@ -34,6 +34,10 @@ A window factory is an X11 client responsible for creating the windows of new
 clients. It can be either implicit or explicit, the key difference being that
 implicit factories create their own window.
 
+=item B<-w> I<DIR>
+
+Launch workspace from I<DIR>.
+
 =item B<-v>
 
 Show version.
