@@ -1,11 +1,11 @@
 Name: wm-launch
-Version: 0.3.0
+Version: 0.4.0
 Release: 1%{?dist}
 Summary: Tool to launch X11 clients with unique IDs
 
 License: LGPL
 URL: https://github.com/jcrd/wm-launch
-Source0: https://github.com/jcrd/wm-launch/archive/v0.3.0.tar.gz
+Source0: https://github.com/jcrd/wm-launch/archive/v0.4.0.tar.gz
 
 Requires: bash
 
@@ -34,11 +34,14 @@ wm-launch provides a shared library for use with LD_PRELOAD and a command-line t
 %doc README.md
 %{_bindir}/%{name}
 %{_bindir}/%{name}d
-/usr/lib/wm-launch/%{name}-preload.so
+/usr/lib/wm-launch
 /usr/lib/systemd/user/%{name}d.service
 %{_mandir}/man1/%{name}.1.gz
 
 %changelog
+* Sun Nov 1 2020 James Reed <jcrd@tuta.io> - 0.4.0-1
+- Release v0.4.0
+
 * Wed Sep 16 2020 James Reed <jcrd@tuta.io> - 0.3.0-1
 - Release v0.3.0
 
