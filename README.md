@@ -37,6 +37,7 @@ options:
   -s          Launch with systemd-run
   -j          Launch with firejail
   -f FACTORY  Launch via a window factory
+  -w DIR      Launch workspace from DIR
   -v          Show version
 ```
 
@@ -74,6 +75,40 @@ service to run when the `graphical-session.target` is reached:
 ```
 systemctl --user enable wm-launchd
 ```
+
+### Workspaces
+With the `-w` flag, `wm-launch` can initiate the startup of multiple clients
+based on a `.workspace` file. The programs therein are expected to be
+launched by the running window manager, which must implement the
+`com.github.jcrd.wm_launch.WindowManager` DBus interface.
+
+#### .workspace files
+A `.workspace` file contains one program per line to run.
+If preceded by a `@`, the program will be interpreted as one defined by the
+window manager, otherwise the window manager should execute it directly.
+
+For example, given:
+```
+@terminal
+xterm
+```
+`@terminal` should be defined by the window manager. This is useful when
+additional context is necessary, such as running with a factory,
+`systemd-run`, etc.
+
+`xterm` should be executed directly by the window manager.
+
+#### DBus interface
+A window manager must implement the `com.github.jcrd.wm_launch.WindowManager`
+interface under the path `/com/github/jcrd/wm_launch/WindowManager` at the
+well-known name `com.github.jcrd.wm_launch`.
+
+This interface must define the `Workspace` method, which takes three arguments:
+1. The workspace name as a string
+2. The workspace working directory as a string
+3. An array of strings representing clients to launch
+
+It returns nothing.
 
 ### systemd-run
 A client can be launched with `systemd-run` by running it via `wm-launch` using
