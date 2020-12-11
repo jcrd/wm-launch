@@ -19,8 +19,8 @@
 
 set -eu
 
-readonly LIBPREFIX=
-readonly VERSION=
+readonly LIBPREFIX=@LIBPREFIX
+readonly VERSION=@VERSION
 
 readonly PRELOAD="${WM_LAUNCH_PRELOAD:-$LIBPREFIX/wm-launch/wm-launch-preload.so}"
 
