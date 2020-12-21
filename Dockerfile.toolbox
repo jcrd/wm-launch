@@ -11,3 +11,9 @@ RUN dnf install -y firejail
 # clangd
 RUN dnf install -y clang-tools-extra
 RUN dnf install -y bear
+
+# shell
+RUN dnf install -y ShellCheck
+
+RUN dnf install -y npm
+RUN npm i -g bash-language-server
