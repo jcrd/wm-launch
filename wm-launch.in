@@ -21,11 +21,13 @@ readonly LIBPREFIX=@LIBPREFIX
 readonly VERSION=@VERSION
 
 readonly PRELOAD="${WM_LAUNCH_PRELOAD:-$LIBPREFIX/wm-launch/wm-launch-preload.so}"
-
-readonly WORKSPACE_LAUNCHER="${WM_LAUNCH_WORKSPACE_LAUNCHER:-$LIBPREFIX/wm-launch/wm-launch-workspace}"
 readonly WORKSPACE_FILENAME="${WM_LAUNCH_WORKSPACE_FILENAME:-.workspace}"
 
 readonly SYSTEMD_RUN='systemd-run --user --scope'
+
+readonly DBUS_NAME='com.github.jcrd.wm_launch'
+readonly DBUS_METHOD="$DBUS_NAME.WindowManager.NewWorkspace"
+readonly DBUS_PATH='/com/github/jcrd/wm_launch/WindowManager'
 
 usage() {
     echo 'usage: wm-launch [options] WM_LAUNCH_ID COMMAND...
@@ -44,8 +46,23 @@ usage_error() {
     exit 2
 }
 
-workspace() {
-    "$WORKSPACE_LAUNCHER" "$1/$WORKSPACE_FILENAME"
+new_workspace() {
+    path="$(realpath "$1/$WORKSPACE_FILENAME")"
+
+    if [ ! -f "$path" ]; then
+        echo "$path is not a workspace file" >&2
+        exit 2
+    fi
+
+    dir="${path%/*}"
+    clients=""
+
+    while read -r line; do
+        clients="$clients,'$line'"
+    done < "$path"
+
+    gdbus call -e -d $DBUS_NAME -o $DBUS_PATH -m $DBUS_METHOD \
+        "${dir##*/}" "$dir" "[${clients#,}]" > /dev/null
 }
 
 while getopts ':hsjf:w:v' opt; do
@@ -54,7 +71,7 @@ while getopts ':hsjf:w:v' opt; do
         s) systemd=true ;;
         j) firejail=true ;;
         f) factory="$OPTARG" ;;
-        w) workspace "$OPTARG"; exit ;;
+        w) new_workspace "$OPTARG"; exit ;;
         v) echo "$VERSION"; exit ;;
         *) usage_error
     esac

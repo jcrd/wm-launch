@@ -103,7 +103,7 @@ A window manager must implement the `com.github.jcrd.wm_launch.WindowManager`
 interface under the path `/com/github/jcrd/wm_launch/WindowManager` at the
 well-known name `com.github.jcrd.wm_launch`.
 
-This interface must define the `Workspace` method, which takes three arguments:
+This interface must define the `NewWorkspace` method, which takes three arguments:
 1. The workspace name as a string
 2. The workspace working directory as a string
 3. An array of strings representing clients to launch

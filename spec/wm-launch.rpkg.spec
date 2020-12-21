@@ -9,6 +9,8 @@ VCS: {{{ git_vcs }}}
 Source0: {{{ git_pack }}}
 
 Requires: bash
+Requires: coreutils
+Requires: glib2
 
 BuildRequires: gcc
 BuildRequires: perl
