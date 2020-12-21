@@ -3,7 +3,7 @@ Version: {{{ git_version lead="$(git tag | sed -n 's/^v//p' | sort --version-sor
 Release: 1%{?dist}
 Summary: Tool to launch X11 clients with unique IDs
 
-License: LGPL
+License: GPLv3+
 URL: https://github.com/jcrd/wm-launch
 VCS: {{{ git_vcs }}}
 Source0: {{{ git_pack }}}

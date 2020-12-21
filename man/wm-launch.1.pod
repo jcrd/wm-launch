@@ -56,4 +56,4 @@ L<https://github.com/jcrd/wm-launch/issues>
 =head1 COPYRIGHT
 
 Copyright 2019-2020 James Reed. wm-launch is licensed under the
-GNU Lesser General Public License v2.1 or later.
+GNU General Public License v3.0 or later.

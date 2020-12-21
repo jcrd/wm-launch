@@ -159,7 +159,7 @@ run in containers. It must be tested locally.
 
 ## License
 
-wm-launch is licensed under the GNU Lesser General Public License v2.1 or later
+wm-launch is licensed under the GNU General Public License v3.0 or later
 (see [LICENSE](LICENSE)).
 
 ## Acknowledgements
