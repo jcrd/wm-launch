@@ -1,13 +1,15 @@
 Name: wm-launch
-Version: 0.4.0
+Version: 0.5.0
 Release: 1%{?dist}
 Summary: Tool to launch X11 clients with unique IDs
 
-License: LGPL
+License: GPLv3+
 URL: https://github.com/jcrd/wm-launch
-Source0: https://github.com/jcrd/wm-launch/archive/v0.4.0.tar.gz
+Source0: https://github.com/jcrd/wm-launch/archive/v0.5.0.tar.gz
 
 Requires: bash
+Requires: coreutils
+Requires: glib2
 
 BuildRequires: gcc
 BuildRequires: perl
@@ -39,6 +41,11 @@ wm-launch provides a shared library for use with LD_PRELOAD and a command-line t
 %{_mandir}/man1/%{name}.1.gz
 
 %changelog
+* Thu Dec 31 2020 James Reed <jcrd@tuta.io> - 0.5.0-1
+- Release v0.5.0
+- Runtime now requires coreutils and glib2 for `gdbus`
+- License changed to GPLv3+
+
 * Sun Nov 1 2020 James Reed <jcrd@tuta.io> - 0.4.0-1
 - Release v0.4.0
 
