@@ -46,13 +46,13 @@ func (f *Factory) exists() bool {
     return t == f.timestamp
 }
 
-func (f *Factory) addId(id string) {
+func (f *Factory) addID(id string) {
     f.mutex.Lock()
     f.ids = append(f.ids, id)
     f.mutex.Unlock()
 }
 
-func (f *Factory) popId() (string, error) {
+func (f *Factory) popID() (string, error) {
     n := len(f.ids)
     if n > 0 {
         f.mutex.Lock()
@@ -250,7 +250,7 @@ func handleConn(c net.Conn) {
                 break
             }
         }
-        f.addId(fields[2])
+        f.addID(fields[2])
         reply("OK")
     case "GET_ID":
         f := factMap.get(fields[1])
@@ -258,7 +258,7 @@ func handleConn(c net.Conn) {
             reply("ERROR NO_FACTORY")
             break
         }
-        id, err := f.popId()
+        id, err := f.popID()
         if err != nil {
             reply("ERROR NO_ID")
             break
