@@ -69,7 +69,7 @@ func (f *Factory) popID() (string, error) {
 }
 
 type FactMap struct {
-    mutex *sync.Mutex
+    mutex *sync.RWMutex
     facts map[string]*Factory
 }
 
@@ -97,10 +97,9 @@ func (fm *FactMap) remove(name string) {
 }
 
 func (fm *FactMap) get(name string) *Factory {
-    fm.mutex.Lock()
-    f, ok := fm.facts[name]
-    fm.mutex.Unlock()
-    if ok {
+    fm.mutex.RLock()
+    defer fm.mutex.RUnlock()
+    if f, ok := fm.facts[name]; ok {
         return f
     }
     return nil
@@ -122,16 +121,16 @@ func (fm *FactMap) check(name string) bool {
 
 func (fm *FactMap) getFactNames() []string {
     names := make([]string, 0, len(fm.facts))
-    fm.mutex.Lock()
+    fm.mutex.RLock()
+    defer fm.mutex.RUnlock()
     for n := range fm.facts {
         names = append(names, n)
     }
-    fm.mutex.Unlock()
     return names
 }
 
 var factMap = FactMap{
-    mutex: &sync.Mutex{},
+    mutex: &sync.RWMutex{},
     facts: make(map[string]*Factory),
 }
 var socketPath = getSocketPath()
