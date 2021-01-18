@@ -286,13 +286,13 @@ func send(s ...interface{}) string {
 }
 
 func main() {
-    var factory string
-    var id string
-    var check string
-    var list bool
+    factory := flag.String("factory", "", "name of window factory")
+    id := flag.String("id", "", "ID to add to factory")
+    check := flag.String("check", "", "name of factory to check")
+    list := flag.Bool("list", false, "list factory names or IDs")
 
     printList := func(cmd ...interface{}) {
-        if list {
+        if *list {
             rsp := send(cmd...)
             if strings.HasPrefix(rsp, "ERROR") {
                 os.Exit(1)
@@ -310,25 +310,20 @@ func main() {
         }
     }
 
-    flag.StringVar(&factory, "factory", "", "name of window factory")
-    flag.StringVar(&id, "id", "", "ID to add to factory")
-    flag.StringVar(&check, "check", "", "name of factory to check")
-    flag.BoolVar(&list, "list", false, "list factory names or IDs")
-
     flag.Parse()
 
-    if check != "" {
-        checkFact(check)
+    if *check != "" {
+        checkFact(*check)
     }
 
-    if factory != "" {
-        printList("LIST_IDS", factory)
-        if id != "" {
-            send("ADD_ID", factory, id)
+    if *factory != "" {
+        printList("LIST_IDS", *factory)
+        if *id != "" {
+            send("ADD_ID", *factory, *id)
             os.Exit(0)
         }
 
-        checkFact(factory)
+        checkFact(*factory)
     }
 
     printList("LIST_FACTORIES")
