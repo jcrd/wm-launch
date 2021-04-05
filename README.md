@@ -41,12 +41,12 @@ options:
   -v          Show version
 ```
 
-### Window factories
+## Window factories
 A window factory is an X11 client responsible for creating the windows of new
 clients. It can be either implicit or explicit, the key difference being that
 implicit factories create their own window.
 
-#### Implicit factory
+### Implicit factory
 An implicit factory is an X11 client that reuses a single instance to create
 additional windows each time it's launched, e.g. `qutebrowser`, `kitty -1`.
 
@@ -56,7 +56,7 @@ To correctly set the `WM_LAUNCH_ID` of an implicit factory, always run it via
 wm-launch -f qute id2 qutebrowser
 ```
 
-#### Explicit factory
+### Explicit factory
 An explicit window factory is a daemon that creates windows based on a client's
 request, e.g. `emacsd` and `emacsclient`, `urxvtd` and `urxvtc`.
 
@@ -68,7 +68,7 @@ LD_PRELOAD=/usr/lib/wm-launch/wm-launch-preload.so WM_LAUNCH_FACTORY=emacs emacs
 
 Then launch with `wm-launch -f emacs id3 emacsclient`.
 
-### wm-launchd
+## wm-launchd
 
 wm-launchd must be running to handle window factories. Enable the systemd
 service to run when the `graphical-session.target` is reached:
@@ -76,13 +76,13 @@ service to run when the `graphical-session.target` is reached:
 systemctl --user enable wm-launchd
 ```
 
-### Workspaces
+## Workspaces
 With the `-w` flag, `wm-launch` can initiate the startup of multiple clients
 based on a `.workspace` file. The programs therein are expected to be
 launched by the running window manager, which must implement the
 `com.github.jcrd.wm_launch.WindowManager` DBus interface.
 
-#### .workspace files
+### .workspace files
 A `.workspace` file contains one program per line to run.
 If preceded by a `@`, the program will be interpreted as one defined by the
 window manager, otherwise the window manager should execute it directly.
@@ -98,7 +98,7 @@ additional context is necessary, such as running with a factory,
 
 `xterm` should be executed directly by the window manager.
 
-#### DBus interface
+### DBus interface
 A window manager must implement the `com.github.jcrd.wm_launch.WindowManager`
 interface under the path `/com/github/jcrd/wm_launch/WindowManager` at the
 well-known name `com.github.jcrd.wm_launch`.
@@ -110,12 +110,12 @@ This interface must define the `NewWorkspace` method, which takes three argument
 
 It returns nothing.
 
-### systemd-run
+## systemd-run
 A client can be launched with `systemd-run` by running it via `wm-launch` using
 the `-s` flag. This will run the command in a user scope with
 `systemd-run --user --scope`.
 
-### Firejail
+## Firejail
 A client can be launched with [firejail](https://github.com/netblue30/firejail)
 by running it via `wm-launch` using the `-j` flag. This sets the required
 environment variables in the sandbox created by firejail.
