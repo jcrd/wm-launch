@@ -41,6 +41,16 @@ options:
   -v          Show version
 ```
 
+### Example use cases
+
+wm-launch can be used to:
+
+* reliably assign clients to window manager desktops/workspaces so that even
+  slow-to-spawn windows appear where intended
+* identify separate instances of the same application to be managed differently,
+  focused via keybindings, etc.
+* launch or focus a single instance of an application
+
 ## Window factories
 A window factory is an X11 client responsible for creating the windows of new
 clients. It can be either implicit or explicit, the key difference being that
