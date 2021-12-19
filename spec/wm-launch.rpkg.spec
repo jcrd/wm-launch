@@ -1,12 +1,12 @@
-Name: {{{ git_name name="wm-launch" }}}
-Version: {{{ git_version lead="$(git tag | sed -n 's/^v//p' | sort --version-sort -r | head -n1)" }}}
+Name: {{{ git_cwd_name name="wm-launch" }}}
+Version: {{{ git_cwd_version lead="$(git tag | sed -n 's/^v//p' | sort --version-sort -r | head -n1)" }}}
 Release: 1%{?dist}
 Summary: Tool to launch X11 clients with unique IDs
 
 License: GPLv3+
 URL: https://github.com/jcrd/wm-launch
-VCS: {{{ git_vcs }}}
-Source0: {{{ git_pack }}}
+VCS: {{{ git_cwd_vcs }}}
+Source0: {{{ git_cwd_pack }}}
 
 Requires: bash
 Requires: coreutils
@@ -24,7 +24,7 @@ BuildRequires: pkgconfig(xcb)
 wm-launch provides a shared library for use with LD_PRELOAD and a command-line tool to set IDs on newly created X11 windows.
 
 %prep
-{{{ git_setup_macro }}}
+{{{ git_cwd_setup_macro }}}
 
 %build
 %make_build PREFIX=/usr
@@ -42,4 +42,4 @@ wm-launch provides a shared library for use with LD_PRELOAD and a command-line t
 %{_mandir}/man1/%{name}.1.gz
 
 %changelog
-{{{ git_changelog }}}
+{{{ git_cwd_changelog }}}
