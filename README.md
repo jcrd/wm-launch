@@ -11,14 +11,14 @@ used by a window manager to uniquely identify clients it launches.
 
 * Fedora ([copr][copr])
 
-  ```
+  ```sh
   dnf copr enable jcrd/wm-launch
   dnf install wm-launch
   ```
 
 * Arch Linux ([AUR][aur])
 
-  ```
+  ```sh
   git clone https://aur.archlinux.org/wm-launch.git
   cd wm-launch
   makepkg -si
@@ -32,13 +32,13 @@ used by a window manager to uniquely identify clients it launches.
 `LD_PRELOAD` can be specified along with `WM_LAUNCH_ID` in the
 environment of a command:
 
-```
+```sh
 LD_PRELOAD=/usr/lib/wm-launch/wm-launch-preload.so WM_LAUNCH_ID=id1 xterm
 ```
 
 The window created by `xterm` will have the property `WM_LAUNCH_ID`:
 
-```
+```sh
 $ xprop WM_LAUNCH_ID
 > WM_LAUNCH_ID(UTF8_STRING) = "id1"
 ```
@@ -46,7 +46,7 @@ $ xprop WM_LAUNCH_ID
 A command-line tool is provided for convenience and for interacting with window
 factories:
 
-```
+```txt
 usage: wm-launch [options] WM_LAUNCH_ID COMMAND...
 
 options:
@@ -82,7 +82,7 @@ additional windows each time it's launched, e.g. `qutebrowser`, `kitty -1`.
 To correctly set the `WM_LAUNCH_ID` of an implicit factory, always run it via
 `wm-launch` with the same argument to the `-f` flag:
 
-```
+```sh
 wm-launch -f qute id2 qutebrowser
 ```
 
@@ -94,7 +94,7 @@ request, e.g. `emacsd` and `emacsclient`, `urxvtd` and `urxvtc`.
 To correctly set the `WM_LAUNCH_ID` of an explicit factory, run the daemon with
 `LD_PRELOAD` and `WM_LAUNCH_FACTORY`:
 
-```
+```sh
 LD_PRELOAD=/usr/lib/wm-launch/wm-launch-preload.so WM_LAUNCH_FACTORY=emacs emacsd
 ```
 
@@ -105,7 +105,7 @@ Then launch with `wm-launch -f emacs id3 emacsclient`.
 wm-launchd must be running to handle window factories. Enable the systemd
 service to run when the `graphical-session.target` is reached:
 
-```
+```sh
 systemctl --user enable wm-launchd
 ```
 
@@ -124,7 +124,7 @@ window manager, otherwise the window manager should execute it directly.
 
 For example, given:
 
-```
+```txt
 @terminal
 xterm
 ```
